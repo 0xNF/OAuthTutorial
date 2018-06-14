@@ -1,44 +1,69 @@
-﻿@model OAuthTutorial.Models.OAuth.OAuthClient
-
-@{
-    ViewData["Title"] = "Edit";
+﻿@model OAuthTutorial.Models.OAuthClientViewModels.EditClientViewModel
+@{ ViewData["Title"] = "Edit";
 }
-
 <h2>Edit</h2>
-
-<h4>OAuthClient</h4>
+<h4>@Model.ClientName</h4>
+<div>
+    Client Id: <p>@Model.ClientId</p>
+    <div>
+        <div>
+            Client Secret: <p>@Model.ClientSecret</p>
+        </div>
+        <form method="post" asp-action="ResetSecret">
+            <input type="hidden" name="id" value="@Model.ClientId" />
+            <button class="btn btn-xs btn-danger">RESET</button>
+        </form>
+    </div>
+</div>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ClientId" />
             <div class="form-group">
-                <label asp-for="ClientSecret" class="control-label"></label>
-                <input asp-for="ClientSecret" class="form-control" />
-                <span asp-validation-for="ClientSecret" class="text-danger"></span>
+                <label asp-for="@Model.ClientDescription" class="control-label"></label>
+                <textarea asp-for="@Model.ClientDescription" class="form-control"></textarea>
+                <span asp-validation-for="@Model.ClientDescription" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ClientName" class="control-label"></label>
-                <input asp-for="ClientName" class="form-control" />
-                <span asp-validation-for="ClientName" class="text-danger"></span>
+
+            <div id="rdiDivs" class="form-group">
+                <label asp-for="@Model.RedirectUris" class="control-label" />
+                <br />
+                @for (int i = 0; i < Model.RedirectUris.Length; i++) {
+                    <div id="rdiDiv_@i">
+                        <input name="RedirectUris" value="@Model.RedirectUris[i]" />
+                        <button type="button" onclick="RemoveRdiDiv(@i)">Remove</button>
+                    </div>
+                }
             </div>
-            <div class="form-group">
-                <label asp-for="ClientDescription" class="control-label"></label>
-                <input asp-for="ClientDescription" class="form-control" />
-                <span asp-validation-for="ClientDescription" class="text-danger"></span>
-            </div>
+            <button onclick="AddRdiDiv()" type="button">Add Redirect URI</button>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-default" />
             </div>
         </form>
     </div>
 </div>
-
+<form method="post" asp-action="Delete">
+    <input type="hidden" name="id" value="@Model.ClientId" />
+    <button class="btn btn-xs btn-danger">DELETE</button>
+</form>
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
+<script>
 
+    var count = @Model.RedirectUris.Length;
+
+    function AddRdiDiv() {
+        count += 1;
+        console.log("ayyy");
+        $("#rdiDivs").append('<div id="rdiDiv_' + count +'"><input name="RedirectUris" value=""/><button type="button" onclick="RemoveRdiDiv('+count+')">remove</button></div>');
+    }
+
+    function RemoveRdiDiv(id) {
+        $("#rdiDiv_" + id).remove();
+    }
+
+</script>
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

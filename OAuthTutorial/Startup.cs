@@ -29,7 +29,14 @@ namespace OAuthTutorial
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>((x) => {
+                x.Password.RequiredLength = 6;
+                x.Password.RequiredUniqueChars = 0;
+                x.Password.RequireNonAlphanumeric = false;
+                x.Password.RequireDigit = false;
+                x.Password.RequireLowercase = false;
+                x.Password.RequireUppercase = false;
+            })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 

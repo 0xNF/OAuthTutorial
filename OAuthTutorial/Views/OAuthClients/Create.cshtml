@@ -1,22 +1,14 @@
-﻿@model OAuthTutorial.Models.OAuth.OAuthClient
-
+﻿@model OAuthTutorial.Models.OAuthClientViewModels.CreateClientViewModel
 @{
     ViewData["Title"] = "Create";
 }
-
 <h2>Create</h2>
-
 <h4>OAuthClient</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="ClientSecret" class="control-label"></label>
-                <input asp-for="ClientSecret" class="form-control" />
-                <span asp-validation-for="ClientSecret" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="ClientName" class="control-label"></label>
                 <input asp-for="ClientName" class="form-control" />
@@ -33,11 +25,9 @@
         </form>
     </div>
 </div>
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

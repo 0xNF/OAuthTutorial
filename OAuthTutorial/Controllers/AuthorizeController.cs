@@ -12,6 +12,7 @@ using OAuthTutorial.Data;
 using OAuthTutorial.Models;
 using OAuthTutorial.Models.AuthorizeViewModels;
 using OAuthTutorial.Models.OAuth;
+using OAuthTutorial.Providers;
 
 namespace OAuthTutorial.Controllers {
 

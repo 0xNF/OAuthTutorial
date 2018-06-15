@@ -5,14 +5,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OAuthTutorial.Data;
 using OAuthTutorial.Models.OAuth;
+using OAuthTutorial.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace OAuthTutorial.Providers
-{
+namespace OAuthTutorial.Providers {
     public class OAuthProvider : OpenIdConnectServerProvider {
 
         private ValidationService VService;

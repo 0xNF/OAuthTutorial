@@ -69,8 +69,4 @@ namespace OAuthTutorial.Services {
             return true;
         }
     }
-
-    public class TokenService {
-
-    }
 }

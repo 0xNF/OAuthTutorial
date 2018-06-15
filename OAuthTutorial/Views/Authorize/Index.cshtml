@@ -1,0 +1,56 @@
+﻿@using OAuthTutorial.Models.AuthorizeViewModels
+@model OAuthTutorial.Models.AuthorizeViewModels.AuthorizeViewModel
+@{
+    ViewData["Title"] = "Authorize an Application";
+}
+
+<h2><strong>@Model.ClientName</strong> wants your permission.</h2>
+<div>
+    Description:
+    <strong>@Model.ClientDescription</strong>
+</div>
+<hr />
+<div>
+    This application is requesting the following permissions:
+    <ul>
+        @if (Model.Scopes.Any()) {
+            foreach (string s in Model.Scopes) {
+                <li>
+                    @s
+                </li>
+            }
+        }
+        else {
+            <li>
+                None. This application doesn't need any special persmissions.
+            </li>
+        }
+    </ul>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3">
+            <form method="POST" asp-action="accept">
+                <input type="hidden" name="client_id" value="@Model.ClientId" />
+                <input type="hidden" name="response_type" value="@Model.ResponseType" />
+                <input type="hidden" name="scope" value="@string.Join(' ', Model.Scopes)" />
+                <input type="hidden" name="redirect_uri" value="@Model.RedirectUri" />
+                <input type="hidden" name="state" value="@Model.State" />
+
+                <button class="btn btn-xs btn-danger" type="submit">
+                    accept
+                </button>
+            </form>
+        </div>
+
+        <div class="col-sm-3">
+            <form method="post" asp-action="deny">
+                <button class="btn btn-xs btn-primary"
+                        type="submit">
+                    deny
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,7 @@
 ﻿using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.EntityFrameworkCore;
 using OAuthTutorial.Data;
+using OAuthTutorial.Models.OAuth;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -50,11 +51,21 @@ namespace OAuthTutorial.Services {
                 return false;
             }
             else {
-                return _context.ClientApplications.Include(x => x.UserApplicationTokens).Any(x => x.UserApplicationTokens.Any(y => y.TokenType == OpenIdConnectConstants.TokenUsages.RefreshToken && y.Value == refresh));
+                return await _context.ClientApplications.Include(x => x.UserApplicationTokens).AnyAsync(x => x.UserApplicationTokens.Any(y => y.TokenType == OpenIdConnectConstants.TokenUsages.RefreshToken && y.Value == refresh));
             }
         }
 
         public async Task<bool> CheckScopesAreValid(string scope) {
+            if (string.IsNullOrWhiteSpace(scope)) {
+                return true; // Unlike the other checks, an empty scope is a valid scope. It just means the application has default permissions.
+            }
+
+            string[] scopes = scope.Split(' ');
+            foreach (string s in scopes) {
+                if (!OAuthScope.NameInScopes(s)) {
+                    return false;
+                }
+            }
             return true;
         }
     }

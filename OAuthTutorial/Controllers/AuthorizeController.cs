@@ -46,7 +46,7 @@ namespace OAuthTutorial.Controllers {
         }
 
         [HttpPost("deny")]
-        public async Task<IActionResult> Deny() {
+        public IActionResult Deny() {
             return LocalRedirect("/");
         }
 

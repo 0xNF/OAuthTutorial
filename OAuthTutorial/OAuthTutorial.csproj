@@ -25,7 +25,6 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
-    <Folder Include="Views\Authorize\" />
   </ItemGroup>
 
 </Project>

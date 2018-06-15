@@ -59,6 +59,8 @@ namespace OAuthTutorial
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddScoped<OAuthProvider>();
+            services.AddTransient<ValidationService>();
+            services.AddTransient<TokenService>();
 
             services.AddMvc();
         }

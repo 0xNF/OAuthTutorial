@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OAuthTutorial.Data;
 using OAuthTutorial.Models;
 using OAuthTutorial.Services;
+using OAuthTutorial.Providers;
 
 namespace OAuthTutorial
 {
@@ -40,8 +41,24 @@ namespace OAuthTutorial
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddAuthentication()
+            .AddOpenIdConnectServer(options => {
+                options.UserinfoEndpointPath = "/api/v1/me";
+                options.TokenEndpointPath = "/api/v1/token";
+                options.AuthorizationEndpointPath = "/authorize/";
+                options.UseSlidingExpiration = false; // False means that new Refresh tokens aren't issued. Our implementation will be doing a no-expiry refresh, and this is one part of it.
+                options.AllowInsecureHttp = true; // ONLY FOR TESTING
+                options.AccessTokenLifetime = TimeSpan.FromHours(1); // An access token is valid for an hour - after that, a new one must be requested.
+                options.RefreshTokenLifetime = TimeSpan.FromDays(365 * 1000); //NOTE - Later versions of the ASOS library support `TimeSpan?` for these lifetime fields, meaning no expiration. 
+                                                                              // The version we are using does not, so a long running expiration of one thousand years will suffice.
+                options.AuthorizationCodeLifetime = TimeSpan.FromSeconds(60);
+                options.IdentityTokenLifetime = options.AccessTokenLifetime;
+                options.ProviderType = typeof(OAuthProvider);
+            });
+
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
+            services.AddScoped<OAuthProvider>();
 
             services.AddMvc();
         }

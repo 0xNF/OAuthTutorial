@@ -12,6 +12,8 @@ using OAuthTutorial.Data;
 using OAuthTutorial.Models;
 using OAuthTutorial.Services;
 using OAuthTutorial.Providers;
+using Microsoft.AspNetCore.Authorization;
+using OAuthTutorial.Policies;
 
 namespace OAuthTutorial
 {
@@ -62,6 +64,8 @@ namespace OAuthTutorial
             services.AddScoped<OAuthProvider>();
             services.AddTransient<ValidationService>();
             services.AddTransient<TokenService>();
+            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+            services.AddSingleton<IAuthorizationHandler, HasScopeHandler>();
 
             services.AddMvc();
         }

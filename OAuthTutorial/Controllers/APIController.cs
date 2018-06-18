@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OAuthTutorial.Attributes;
 using OAuthTutorial.Data;
 using OAuthTutorial.Models;
 using System.Threading.Tasks;
 
 namespace OAuthTutorial.Controllers {
 
+    [RateLimit]
     [Route("/api/v1/")]
     public class APIController : Controller {
 

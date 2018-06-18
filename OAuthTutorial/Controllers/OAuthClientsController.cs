@@ -52,6 +52,7 @@ namespace OAuthTutorial.Controllers
                     ClientId = Guid.NewGuid().ToString(),
                     ClientSecret = Guid.NewGuid().ToString(),
                     Owner = owner,
+                    RateLimit = RateLimit.DefaultClientLimit
                 };
 
                 _context.Add(client);

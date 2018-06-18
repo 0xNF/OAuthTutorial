@@ -102,6 +102,12 @@ namespace OAuthTutorial.Providers {
             if (client == null) {
                 return;
             }
+            if (client.SubordinateTokenLimits == null) {
+                access.RateLimit = RateLimit.DefaultImplicitLimit;
+            }
+            else {
+                access.RateLimit = client.SubordinateTokenLimits;
+            }
 
             await TService.WriteNewTokenToDatabase(context.Request.ClientId, access, claimsUser);
         }
@@ -320,6 +326,8 @@ namespace OAuthTutorial.Providers {
                 return;
             }
 
+            RateLimit rl = client.SubordinateTokenLimits;
+
             // Implicit Flow Tokens are not returned from the `Token` group of methods - you can find them in the `Authorize` group.
             if (context.Request.IsClientCredentialsGrantType()) {
                 // The only thing returned from a successful client grant is a single `Token`
@@ -327,6 +335,7 @@ namespace OAuthTutorial.Providers {
                     TokenType = OpenIdConnectConstants.TokenUsages.AccessToken,
                     GrantType = OpenIdConnectConstants.GrantTypes.ClientCredentials,
                     Value = context.Response.AccessToken,
+                    RateLimit = rl ?? RateLimit.DefaultClientLimit,
                 };
 
                 await TService.WriteNewTokenToDatabase(context.Request.ClientId, t);
@@ -336,11 +345,11 @@ namespace OAuthTutorial.Providers {
                     TokenType = OpenIdConnectConstants.TokenUsages.AccessToken,
                     GrantType = OpenIdConnectConstants.GrantTypes.AuthorizationCode,
                     Value = context.Response.AccessToken,
+                    RateLimit = rl ?? RateLimit.DefaultAuthorizationCodeLimit,
                 };
                 Token refresh = new Token() {
                     TokenType = OpenIdConnectConstants.TokenUsages.RefreshToken,
                     GrantType = OpenIdConnectConstants.GrantTypes.AuthorizationCode,
-                    Value = context.Response.RefreshToken,
                 };
 
                 await TService.WriteNewTokenToDatabase(context.Request.ClientId, access, context.Ticket.Principal);
@@ -351,6 +360,7 @@ namespace OAuthTutorial.Providers {
                     TokenType = OpenIdConnectConstants.TokenUsages.AccessToken,
                     GrantType = OpenIdConnectConstants.GrantTypes.AuthorizationCode,
                     Value = context.Response.AccessToken,
+                    RateLimit = rl ?? RateLimit.DefaultAuthorizationCodeLimit,
                 };
                 await TService.WriteNewTokenToDatabase(context.Request.ClientId, access, context.Ticket.Principal);
             }

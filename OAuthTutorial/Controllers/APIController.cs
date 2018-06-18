@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OAuthTutorial.Data;
@@ -28,33 +29,39 @@ namespace OAuthTutorial.Controllers {
 
         // Authenticated Methdos - only available to those with a valid Access Token
         // Unscoped Methods - Authenticated methods that do not require any specific Scope
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
         [HttpGet("clientcount")]
         public async Task<IActionResult> ClientCount() {
             return Ok("Client Count Get Request was successful but this endpoint is not yet implemented");
         }
 
         // Scoped Methods - Authenticated methods that require certain scopes
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
         [HttpGet("birthdate")]
         public IActionResult GetBirthdate() {
             return Ok("Birthdate Get Request was successful but this endpoint is not yet implemented");
         }
 
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
         [HttpGet("email")]
         public async Task<IActionResult> GetEmail() {
             return Ok("Email Get Request was successful but this endpoint is not yet implemented");
         }
 
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
         [HttpPut("birthdate")]
         public IActionResult ChangeBirthdate(string birthdate) {
             return Ok("Birthdate Put successful but this endpoint is not yet implemented");
         }
 
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
         [HttpPut("email")]
         public async Task<IActionResult> ChangeEmail(string email) {
             return Ok("Email Put request received, but function is not yet implemented");
         }
 
         // Dynamic Scope Methods - Authenticated methods that return additional information the more scopes are supplied
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
         [HttpGet("me")]
         public async Task<IActionResult> Me() {
             return Ok("User Profile Get request received, but function is not yet implemented");

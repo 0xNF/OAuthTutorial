@@ -36,25 +36,25 @@ namespace OAuthTutorial.Controllers {
         }
 
         // Scoped Methods - Authenticated methods that require certain scopes
-        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-read-birthdate")]
         [HttpGet("birthdate")]
         public IActionResult GetBirthdate() {
             return Ok("Birthdate Get Request was successful but this endpoint is not yet implemented");
         }
 
-        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-read-email")]
         [HttpGet("email")]
         public async Task<IActionResult> GetEmail() {
             return Ok("Email Get Request was successful but this endpoint is not yet implemented");
         }
 
-        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-modify-birthdate")]
         [HttpPut("birthdate")]
         public IActionResult ChangeBirthdate(string birthdate) {
             return Ok("Birthdate Put successful but this endpoint is not yet implemented");
         }
 
-        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-modify-email")]
         [HttpPut("email")]
         public async Task<IActionResult> ChangeEmail(string email) {
             return Ok("Email Put request received, but function is not yet implemented");

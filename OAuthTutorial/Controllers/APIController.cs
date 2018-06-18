@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace OAuthTutorial.Controllers {
 
-    [RateLimit]
     [Route("/api/v1/")]
     public class APIController : Controller {
 
@@ -31,6 +30,7 @@ namespace OAuthTutorial.Controllers {
 
         // Authenticated Methdos - only available to those with a valid Access Token
         // Unscoped Methods - Authenticated methods that do not require any specific Scope
+        [RateLimit]
         [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme)]
         [HttpGet("clientcount")]
         public async Task<IActionResult> ClientCount() {
@@ -38,24 +38,28 @@ namespace OAuthTutorial.Controllers {
         }
 
         // Scoped Methods - Authenticated methods that require certain scopes
+        [RateLimit]
         [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-read-birthdate")]
         [HttpGet("birthdate")]
         public IActionResult GetBirthdate() {
             return Ok("Birthdate Get Request was successful but this endpoint is not yet implemented");
         }
 
+        [RateLimit]
         [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-read-email")]
         [HttpGet("email")]
         public async Task<IActionResult> GetEmail() {
             return Ok("Email Get Request was successful but this endpoint is not yet implemented");
         }
 
+        [RateLimit]
         [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-modify-birthdate")]
         [HttpPut("birthdate")]
         public IActionResult ChangeBirthdate(string birthdate) {
             return Ok("Birthdate Put successful but this endpoint is not yet implemented");
         }
 
+        [RateLimit]
         [Authorize(AuthenticationSchemes = AspNet.Security.OAuth.Validation.OAuthValidationDefaults.AuthenticationScheme, Policy = "user-modify-email")]
         [HttpPut("email")]
         public async Task<IActionResult> ChangeEmail(string email) {

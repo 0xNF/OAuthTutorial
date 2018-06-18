@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OAuthTutorial.Models.ManageViewModels
-{
+namespace OAuthTutorial.Models.ManageViewModels {
     public class ChangePasswordViewModel
     {
         [Required]

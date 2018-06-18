@@ -8,10 +8,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OAuthTutorial.Data;
 using OAuthTutorial.Models;
 using OAuthTutorial.Models.ManageViewModels;
+using OAuthTutorial.Models.OAuth;
 using OAuthTutorial.Services;
 
 namespace OAuthTutorial.Controllers
@@ -25,6 +28,7 @@ namespace OAuthTutorial.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
+        private readonly ApplicationDbContext _context;
 
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
         private const string RecoveryCodesKey = nameof(RecoveryCodesKey);
@@ -34,13 +38,14 @@ namespace OAuthTutorial.Controllers
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
-        {
+          UrlEncoder urlEncoder,
+          ApplicationDbContext context) {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;
+            _context = context;
         }
 
         [TempData]
@@ -489,6 +494,52 @@ namespace OAuthTutorial.Controllers
             var model = new ShowRecoveryCodesViewModel { RecoveryCodes = recoveryCodes.ToArray() };
 
             return View(nameof(ShowRecoveryCodes), model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AuthorizedApps() {
+            string uid = _userManager.GetUserId(User);
+            if (String.IsNullOrWhiteSpace(uid)) {
+                throw new ApplicationException($"Unable to load user with ID '{uid}'.");
+            }
+
+            IEnumerable<Token> userstokens = (await _context.Users.Include(x => x.UserClientTokens).FirstOrDefaultAsync(x => x.Id == uid))?.UserClientTokens;
+            if (userstokens == null) {
+                throw new ApplicationException($"Unable to load user apps for user ID '{uid}'.");
+            }
+
+            IList<OAuthClient> items = _context.ClientApplications.Include(x => x.UserApplicationTokens).Where(x => x.UserApplicationTokens.Any(y => userstokens.Contains(y))).ToList();
+            AuthorizedAppsViewModel aavm = new AuthorizedAppsViewModel() {
+                AuthorizedApps = items,
+            };
+            return View(aavm);
+        }
+
+        [HttpPost, ActionName("revoke/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Revoke(string id) {
+            string uid = _userManager.GetUserId(User);
+            ApplicationUser user = await _context.Users.Include(x => x.UserClientTokens).FirstOrDefaultAsync(x => x.Id == uid);
+            if (user == null || String.IsNullOrWhiteSpace(uid)) {
+                throw new ApplicationException($"Unable to load user with ID '{uid}'.");
+            }
+            OAuthClient client = await _context.ClientApplications.Include(x => x.UserApplicationTokens).FirstOrDefaultAsync(x => x.ClientId == id);
+            if (String.IsNullOrWhiteSpace(id) || client == null) {
+                throw new ApplicationException($"Supplied client id was invalid");
+            }
+
+            IList<Token> tokens = client.UserApplicationTokens.Intersect(client.UserApplicationTokens).ToList();
+            foreach (Token t in tokens) {
+                _context.Tokens.Remove(t);
+                client.UserApplicationTokens.Remove(t);
+                user.UserClientTokens.Remove(t);
+            }
+            _context.ClientApplications.Update(client);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+
+            return RedirectToAction(nameof(AuthorizedApps));
         }
 
         #region Helpers

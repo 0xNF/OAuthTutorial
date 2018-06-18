@@ -31,6 +31,26 @@ namespace OAuthTutorial.Data
                 .WithMany(x => x.UsersOAuthClients)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            /* When an OAuthClient is deleted, delete its Rate Limits */
+            builder.Entity<OAuthClient>()
+                .HasOne(x => x.RateLimit)
+                .WithOne(x => x.Client)
+                .HasForeignKey<RateLimit>(x => x.ClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* When an OAuthClient is deleted, delete its Subordinate Rate Limit */
+            builder.Entity<OAuthClient>()
+                .HasOne(x => x.SubordinateTokenLimits)
+                .WithOne(x => x.SubordinatedClient)
+                .HasForeignKey<RateLimit>(x => x.SubordinatedClientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* RWhen a Rate Limit is deleted, delete any Tokens that use this rate limit */
+            builder.Entity<RateLimit>()
+                .HasOne(x => x.Token)
+                .WithOne(x => x.RateLimit)
+                .OnDelete(DeleteBehavior.Cascade);
+
             /* When an AspNetUser is deleted, delete their tokens */
             builder.Entity<ApplicationUser>()
                 .HasMany(x => x.UserClientTokens)

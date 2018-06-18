@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -25,7 +24,16 @@ namespace OAuthTutorial.Models.OAuth {
         public List<RedirectURI> RedirectURIs { get; set; } = new List<RedirectURI>();
 
         /*  Like above, this notifies EntityFramework of another (1 : Many) mapping */
-        public List<Token> UserApplicationTokens { get; set; } = new List<Token>(); 
+        public List<Token> UserApplicationTokens { get; set; } = new List<Token>();
+
+        /* A Rate limit object for our client - separate from any rate limits applied to the users of this application. */
+        public RateLimit RateLimit { get; set; }
+
+        /* A rate limit objects for tokens issued to this client - usually null
+        * but if a client has been granted special overrides, the limits specified here will be issued to the tokens, 
+        * as opposed to the default grant_type token limits.
+        * This allows us to offer specific applications increaed overall limtis, and incresed per-user limits, if so desired. */
+        public RateLimit SubordinateTokenLimits { get; set; }
 
         [Required]
         [MinLength(2)]

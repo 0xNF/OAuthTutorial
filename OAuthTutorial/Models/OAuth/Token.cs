@@ -17,6 +17,9 @@ namespace OAuthTutorial.Models.OAuth {
         /* The raw value of a token. */
         public string Value { get; set; }
 
+        /* Rate limit for this token, which is independant, but lower than, the rate limit of the client that its authenticated to. */
+        public RateLimit RateLimit { get; set; } 
+
         /* Entity Framework Foreign Key Anchors for OAuth Clients */
         public string OAuthClientId { get; set; }
         public OAuthClient Client { get; set; }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace OAuthTutorial.Migrations
 {
-    public partial class WithModels : Migration
+    public partial class WithRateLimit : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -224,6 +224,41 @@ namespace OAuthTutorial.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "RateLimit",
+                columns: table => new
+                {
+                    RateLimitId = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    ClientId = table.Column<string>(nullable: true),
+                    Limit = table.Column<int>(nullable: true),
+                    SubordinatedClientId = table.Column<string>(nullable: true),
+                    TokenId = table.Column<int>(nullable: true),
+                    Window = table.Column<TimeSpan>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RateLimit", x => x.RateLimitId);
+                    table.ForeignKey(
+                        name: "FK_RateLimit_ClientApplications_ClientId",
+                        column: x => x.ClientId,
+                        principalTable: "ClientApplications",
+                        principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RateLimit_ClientApplications_SubordinatedClientId",
+                        column: x => x.SubordinatedClientId,
+                        principalTable: "ClientApplications",
+                        principalColumn: "ClientId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RateLimit_Tokens_TokenId",
+                        column: x => x.TokenId,
+                        principalTable: "Tokens",
+                        principalColumn: "TokenId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -267,6 +302,24 @@ namespace OAuthTutorial.Migrations
                 column: "Id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_RateLimit_ClientId",
+                table: "RateLimit",
+                column: "ClientId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RateLimit_SubordinatedClientId",
+                table: "RateLimit",
+                column: "SubordinatedClientId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RateLimit_TokenId",
+                table: "RateLimit",
+                column: "TokenId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_RedirectURI_OAuthClientId",
                 table: "RedirectURI",
                 column: "OAuthClientId");
@@ -300,13 +353,16 @@ namespace OAuthTutorial.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "RateLimit");
+
+            migrationBuilder.DropTable(
                 name: "RedirectURI");
 
             migrationBuilder.DropTable(
-                name: "Tokens");
+                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetRoles");
+                name: "Tokens");
 
             migrationBuilder.DropTable(
                 name: "ClientApplications");

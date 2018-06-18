@@ -204,6 +204,35 @@ namespace OAuthTutorial.Migrations
                     b.ToTable("ClientApplications");
                 });
 
+            modelBuilder.Entity("OAuthTutorial.Models.OAuth.RateLimit", b =>
+                {
+                    b.Property<int>("RateLimitId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ClientId");
+
+                    b.Property<int?>("Limit");
+
+                    b.Property<string>("SubordinatedClientId");
+
+                    b.Property<int?>("TokenId");
+
+                    b.Property<TimeSpan?>("Window");
+
+                    b.HasKey("RateLimitId");
+
+                    b.HasIndex("ClientId")
+                        .IsUnique();
+
+                    b.HasIndex("SubordinatedClientId")
+                        .IsUnique();
+
+                    b.HasIndex("TokenId")
+                        .IsUnique();
+
+                    b.ToTable("RateLimit");
+                });
+
             modelBuilder.Entity("OAuthTutorial.Models.OAuth.RedirectURI", b =>
                 {
                     b.Property<int>("Id")
@@ -294,6 +323,24 @@ namespace OAuthTutorial.Migrations
                     b.HasOne("OAuthTutorial.Models.ApplicationUser", "Owner")
                         .WithMany("UsersOAuthClients")
                         .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("OAuthTutorial.Models.OAuth.RateLimit", b =>
+                {
+                    b.HasOne("OAuthTutorial.Models.OAuth.OAuthClient", "Client")
+                        .WithOne("RateLimit")
+                        .HasForeignKey("OAuthTutorial.Models.OAuth.RateLimit", "ClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OAuthTutorial.Models.OAuth.OAuthClient", "SubordinatedClient")
+                        .WithOne("SubordinateTokenLimits")
+                        .HasForeignKey("OAuthTutorial.Models.OAuth.RateLimit", "SubordinatedClientId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("OAuthTutorial.Models.OAuth.Token", "Token")
+                        .WithOne("RateLimit")
+                        .HasForeignKey("OAuthTutorial.Models.OAuth.RateLimit", "TokenId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

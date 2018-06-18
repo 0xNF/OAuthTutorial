@@ -28,6 +28,7 @@ namespace OAuthTutorial.Attributes {
             if (clientIdClaim == null || String.IsNullOrWhiteSpace(clientIdClaim.Value) || String.IsNullOrWhiteSpace(token)) {
                 context.Result = new ContentResult { Content = "Failed to find appropriate claims" };
                 context.HttpContext.Response.StatusCode = (int)System.Net.HttpStatusCode.BadRequest;
+                return;
             }
 
             /* Closures representing the way to get the rate limit of the relevant item, if necessary.

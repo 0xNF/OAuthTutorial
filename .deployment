@@ -1,3 +1,2 @@
 [config]
 project = OAuthTutorial/OAuthTutorial.csproj
-deployment_branch = 19-PushToAzure
